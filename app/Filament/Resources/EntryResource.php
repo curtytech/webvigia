@@ -17,6 +17,8 @@ class EntryResource extends Resource
 {
     protected static ?string $model = Entry::class;
 
+    protected static ?string $modelLabel = 'Entrada e saída';
+
     protected static ?string $navigationLabel = 'Entradas e saídas';
 
     protected static ?string $navigationGroup = 'Controle de acesso';
@@ -48,6 +50,9 @@ class EntryResource extends Resource
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload()
+                    ->default(fn (): ?int => auth()->user()?->role === 'watchman' ? auth()->id() : null)
+                    ->disabled(fn (): bool => auth()->user()?->role === 'watchman')
+                    ->dehydrated()
                     ->required(),
                 Forms\Components\Select::make('person_id')
                     ->label('Pessoa')

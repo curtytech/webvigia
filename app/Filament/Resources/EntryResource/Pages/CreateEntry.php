@@ -66,6 +66,10 @@ class CreateEntry extends CreateRecord
             throw new Halt;
         }
 
+        if (auth()->user()?->role === 'watchman') {
+            $data['user_id'] = auth()->id();
+        }
+
         return $data;
     }
 }

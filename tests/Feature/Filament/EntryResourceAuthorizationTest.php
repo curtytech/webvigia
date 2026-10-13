@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Resources\EntryResource\Pages\CreateEntry;
 use App\Filament\Resources\EntryResource\Pages\EditEntry;
 use App\Filament\Resources\EntryResource\Pages\ListEntries;
 use App\Models\Entry;
@@ -12,6 +13,23 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
+});
+
+it('assigns new entries to the logged-in watchman', function () {
+    $watchman = User::factory()->create(['role' => 'watchman']);
+    $anotherUser = User::factory()->create(['role' => 'admin']);
+
+    $this->actingAs($watchman);
+
+    Livewire::test(CreateEntry::class)
+        ->assertFormSet(['user_id' => $watchman->id])
+        ->assertFormFieldIsDisabled('user_id')
+        ->fillForm(['user_id' => $anotherUser->id])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('entries', ['user_id' => $watchman->id]);
+    $this->assertDatabaseMissing('entries', ['user_id' => $anotherUser->id]);
 });
 
 it('forbids managers from editing entries', function () {
