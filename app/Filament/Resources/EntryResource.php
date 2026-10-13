@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class EntryResource extends Resource
 {
@@ -25,6 +26,11 @@ class EntryResource extends Resource
     protected static ?int $navigationSort = 1;
 
     public static function canCreate(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'watchman'], true);
+    }
+
+    public static function canEdit(Model $record): bool
     {
         return in_array(auth()->user()?->role, ['admin', 'watchman'], true);
     }
@@ -160,6 +166,7 @@ class EntryResource extends Resource
                     ->label('Registrar saída')
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('success')
+                    ->authorize(fn (Entry $record): bool => static::canEdit($record))
                     ->action(fn (Entry $record) => $record->update([
                         'exit_time' => now(),
                     ]))

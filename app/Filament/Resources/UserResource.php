@@ -31,6 +31,11 @@ class UserResource extends Resource
         return in_array(auth()->user()?->role, ['admin'], true);
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()?->role !== 'watchman';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
