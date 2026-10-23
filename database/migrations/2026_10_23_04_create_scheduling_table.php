@@ -11,8 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('scheduling_places', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('scheduling_places_relations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('scheduling_places_id')->constrained('scheduling_places')->cascadeOnDelete();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('responsible_name');
+            $table->string('responsible_email');
+            $table->timestamps();
+        });
+
         Schema::create('scheduling', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('scheduling_places_relations_id')->constrained('scheduling_places_relations')->cascadeOnDelete();
             $table->string('responsible_name');
             $table->string('responsible_email');
             $table->string('phone_number');
@@ -29,6 +47,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('scheduling_places');
+        Schema::dropIfExists('scheduling_places_relations');
         Schema::dropIfExists('scheduling');
     }
 };
