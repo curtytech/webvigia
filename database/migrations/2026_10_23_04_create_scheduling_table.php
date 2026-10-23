@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('scheduling', function (Blueprint $table) {
             $table->id();
             $table->string('responsible_name');
+            $table->string('responsible_email');
             $table->string('phone_number');
             $table->mediumText('motivation');
             $table->integer('people_quantity');
